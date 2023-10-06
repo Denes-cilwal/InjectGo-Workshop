@@ -20,8 +20,10 @@ func main() {
 	// Create a router instance
 	router := infrastructure.NewRouter()
 	userRoutes := router.Group("/api")
+	productRoutes := router.Group("/product")
 
 	routes.SetupUserRoutes(userRoutes, db.DB)
+	routes.SetupProductRoutes(productRoutes, db.DB)
 	// Start the HTTP server
 	err = router.Run(":" + env.ServerPort)
 	if err != nil {

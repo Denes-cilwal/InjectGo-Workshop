@@ -2,6 +2,8 @@ package repository
 
 import (
 	"InjectGo-Workshop/model"
+	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"log"
 )
@@ -9,6 +11,7 @@ import (
 type UserRepository interface {
 	CreateUser(user *model.User) (User *model.User, err error)
 	GetUsers() (users *[]model.User, err error)
+	GetUserByID(userID uint) (*model.User, error)
 	Migrate() error
 }
 
@@ -41,4 +44,15 @@ func (u *IUserRepository) GetUsers() (*[]model.User, error) {
 		return nil, err
 	}
 	return &users, nil
+}
+
+func (u *IUserRepository) GetUserByID(userID uint) (*model.User, error) {
+	var user model.User
+	if err := u.DB.Where("id = ?", userID).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("user not found")
+		}
+		return nil, err
+	}
+	return &user, nil
 }
